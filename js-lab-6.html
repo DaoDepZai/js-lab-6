@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/bootstrap5.3/bootstrap-5.3.0-alpha1-dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/font_awesome/fontawesome-free-6.3.0-web/css/all.min.css">
+    <link rel="stylesheet" href="/css/js-lab-6.css">
+    <title>js lab 6</title>
+</head>
+<body>
+    <section>
+        <div class="container">
+            <div class="nav-lists d-flex color-main justify-content-sm-between">
+                <div class="search h-25 d-flex my-auto w-25">
+                    <input type="text" class="form-control py-3 shadow-sm border-0" id="search-in" name="search-in" placeholder="Search" ><i class="fa-solid fa-magnifying-glass my-auto icon-search" style="color: #ec8665;"></i>
+                </div>
+                <div class="nav color-main ">
+                    <div class="nav-left d-flex align-items-center">
+                        <div>
+                            <a href="#" class="text-decoration-none color-main item-nav-link">Stats</a>
+                        </div>
+                        <div>
+                            <a href="#" class="text-decoration-none color-main item-nav-link">Suppliers</a>
+                        </div>
+                        <div>
+                            <a href="#" class="text-decoration-none color-main item-nav-link">Products</a>
+                        </div>
+                        <div>
+                            <a href="#" class="text-decoration-none color-main item-nav-link">Payments</a>
+                        </div>
+                    </div>
+                    <div class="nav-right d-flex h-100 ">
+                        <div class="ava">
+                            <img src="/img/pisa.jpg" alt="" class="img-responsive ava-user">
+                            <div class="noti">12</div>
+                        </div>
+                        <div class="row flex-nowrap">
+                            <div class="col left-cart">
+                                <div class="row h-50 "><i class="fa-solid fa-basket-shopping my-auto" style="color: #ffffff;"></i></div>
+                                <div class="row h-50"><i class="fa-solid fa-chevron-left my-auto" style="color: #b63a1b;margin-left: 0.3rem;"></i></div>
+                            </div>
+                            <div class="col-12">
+                                <div class="row h-50 right-cart-top"><p class="m-auto p-0 text-center">17 items</p></div>
+                                <div class="row right-cart-bottom h-50"><p class="m-auto p-0 text-center">$358</p></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="content">
+                <div class="row">
+                    <div class="col left-cart">
+                        <div class="title">Search preferences:</div>
+                        <div class="price-title">Price range</div>
+                        <input type="range" min="0" max="2000" step="10" value="500" class="slider" onchange="sort_product()">
+                        <p id="value-price">?</p>
+                    </div>
+                    <div class="col-9">
+                        <h2>Các sản phẩm liên quan</h2>
+                        <div class="row" id="list">
+                            <div class="col-3">
+                                <div class="card" style="width: 18rem;"  >
+                                    <img  class="card-img-top" src="..." alt="Card image cap">
+                                    <div class="card-body" >
+                                      <h5 class="card-title" id="title">Card title</h5>
+                                      <p class="card-text" id="text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+                                      <a href="#" class="btn btn-primary">Go somewhere</a>
+                                    </div>
+                                  </div>
+                            </div>     
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</body>
+<script>
+    var xhttp=new XMLHttpRequest();
+    xhttp.onload=function(){
+        var rs=xhttp.responseText;
+        console.log(Object.values(JSON.parse(rs)));
+        var products=Object.values(JSON.parse(rs))[0];
+        console.log(products);
+        var html="";
+        products.forEach(x=>{
+            html+=`<div class="col-3 mb-3" >
+                <div class="card h-100"  >
+                <img  class="card-img-top h-50" src=${x.thumbnail} alt="Card image cap">
+                <div class="card-body" >
+                    <h5 class="card-title" id="title">${x.title}</h5>
+                    <p class="card-text" id="text">${x.description}</p>
+                    <p class="card-text" id="text">Price: $${x.price}</p>
+                    <a href="#" class="btn btn-primary rtl">Go somewhere</a>
+                </div></div></div>`;
+        })
+        var list=document.getElementById("list");
+        list.innerHTML=html;
+    }
+    xhttp.open("GET","https://dummyjson.com/products?limit=10");
+    xhttp.send();
+    document.getElementById("value-price").innerText="<"+document.querySelector(".slider").value;
+    function loadvalue(){
+    }
+    function sort_product(){
+        let slider=document.querySelector(".slider").value;
+        document.getElementById("value-price").innerText="<"+slider;
+        var xhttp=new XMLHttpRequest();
+        xhttp.onload=function(){
+        var rs=xhttp.responseText;
+        let html="";
+        var products=Object.values(JSON.parse(rs))[0];
+        var products_sort=products.filter(x=>x.price<slider);
+        console.log(products_sort);
+        products_sort.forEach(x=>{
+            html+=`<div class="col-3 mb-3" >
+                <div class="card h-100"  >
+                <img  class="card-img-top h-50" src=${x.thumbnail} alt="Card image cap">
+                <div class="card-body" >
+                    <h5 class="card-title" id="title">${x.title}</h5>
+                    <p class="card-text" id="text">${x.description}</p>
+                    <p class="card-text" id="text">Price: $${x.price}</p>
+                    <a href="#" class="btn btn-primary rtl">Go somewhere</a>
+                </div></div></div>`;
+        });
+        var list=document.getElementById("list");
+        list.innerHTML=html;
+        }
+        xhttp.open('GET',"https://dummyjson.com/products?limit=10");
+        xhttp.send();
+    }
+
+</script>
+</html>
